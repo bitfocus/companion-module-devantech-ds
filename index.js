@@ -1,20 +1,10 @@
 const tcp = require('../../tcp')
 const instance_skel = require('../../instance_skel')
 
-// Constants
-const pollIntervalMs = 1000
-const timeoutMs = 2000
-
 class instance extends instance_skel {
 	constructor(system, id, config) {
 		super(system, id, config)
 		let self = this
-
-		// Variables
-		self.timer = undefined
-		self.loggedError = false // Stops the poll flooding the log
-		self.firstAttempt = true
-		self.timestampOfRequest = Date.now()
 
 		self.initActions()
 		self.initFeedback()
@@ -49,7 +39,6 @@ class instance extends instance_skel {
 
 		self.initTcp()
 		self.initVariables()
-		//self.startPolling()
 	}
 
 	initTcp() {
@@ -97,7 +86,6 @@ class instance extends instance_skel {
 			self.socket.destroy()
 		}
 
-		//self.stopPolling()
 		self.debug('destroy', self.id)
 	}
 
@@ -169,7 +157,6 @@ class instance extends instance_skel {
 					choices: [
 						{ id: 'on', label: 'On' },
 						{ id: 'off', label: 'Off' },
-						/*{ id: 'toggle', label: 'Toggle' },*/
 					],
 				},
 			],
@@ -212,7 +199,6 @@ class instance extends instance_skel {
 		self.config = config
 
 		self.initTcp()
-		//self.startPolling()
 	}
 
 	updateVariables(data, patch) {
@@ -221,7 +207,6 @@ class instance extends instance_skel {
 
 	sendCommand(data) {
 		let self = this
-		const timestamp = Date.now()
 
 		let sendBuf = Buffer.from(data + '\n', 'latin1')
 
