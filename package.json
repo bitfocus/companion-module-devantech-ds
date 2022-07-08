@@ -1,0 +1,28 @@
+{
+  "name": "devantech-ds",
+  "version": "1.0.0",
+  "api_version": "1.0.0",
+  "description": "Devantech DSXXX relay board",
+  "keywords": [
+    "Devantech",
+    "DS",
+    "Relay"
+  ],
+  "manufacturer": "Devantech",
+  "product": "DSXXX",
+  "shortname": "DS",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bitfocus/companion-module-devantech-ds.get"
+  },
+  "author": "Jelle van Abbema",
+  "license": "MIT",
+  "bugs": {
+     "url": "https://github.com/bitfocus/companion-module-devantech-ds/issues"
+  },
+  "homepage": "https://github.com/bitfocus/companion-module-devantech-ds#readme"
+}
