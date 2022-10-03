@@ -13,16 +13,20 @@
   "shortname": "DS",
   "main": "index.js",
   "scripts": {
+    "format": "prettier --write .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bitfocus/companion-module-devantech-ds.get"
+    "url": "git+https://github.com/bitfocus/companion-module-devantech-ds.git"
   },
   "author": "Jelle van Abbema",
   "license": "MIT",
   "bugs": {
-     "url": "https://github.com/bitfocus/companion-module-devantech-ds/issues"
+    "url": "https://github.com/bitfocus/companion-module-devantech-ds/issues"
   },
-  "homepage": "https://github.com/bitfocus/companion-module-devantech-ds#readme"
+  "homepage": "https://github.com/bitfocus/companion-module-devantech-ds#readme",
+  "devDependencies": {
+    "prettier": "^2.7.1"
+  }
 }

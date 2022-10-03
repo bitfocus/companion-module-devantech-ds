@@ -53,6 +53,14 @@ class instance extends instance_skel {
 			self.config.port = 17123
 		}
 
+		// Check if the IP was set.
+		if (self.config.host === undefined || self.config.host.length === 0) {
+			let msg = 'IP is not set'
+			self.log('error', msg)
+			self.status(self.STATUS_WARNING, msg)
+			return
+		}
+
 		if (self.config.host !== undefined) {
 			self.socket = new tcp(self.config.host, self.config.port)
 
