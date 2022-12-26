@@ -1,16 +1,6 @@
 {
   "name": "devantech-ds",
-  "version": "1.0.0",
-  "api_version": "1.0.0",
-  "description": "Devantech DSXXX relay board",
-  "keywords": [
-    "Devantech",
-    "DS",
-    "Relay"
-  ],
-  "manufacturer": "Devantech",
-  "product": "DSXXX",
-  "shortname": "DS",
+  "version": "2.0.0",
   "main": "index.js",
   "scripts": {
     "format": "prettier --write .",
@@ -20,13 +10,14 @@
     "type": "git",
     "url": "git+https://github.com/bitfocus/companion-module-devantech-ds.git"
   },
-  "author": "Jelle van Abbema",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/bitfocus/companion-module-devantech-ds/issues"
-  },
-  "homepage": "https://github.com/bitfocus/companion-module-devantech-ds#readme",
   "devDependencies": {
-    "prettier": "^2.7.1"
-  }
+    "@companion-module/tools": "^0.5.1",
+    "prettier": "^2.8.1"
+  },
+  "dependencies": {
+    "@companion-module/base": "~1.0.1",
+    "tcp": "^1.0.0"
+  },
+  "prettier": "@companion-module/tools/.prettierrc.json"
 }

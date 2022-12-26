@@ -1,43 +1,23 @@
-const tcp = require('../../tcp')
-const instance_skel = require('../../instance_skel')
+const { InstanceBase, Regex, runEntrypoint, InstanceStatus } = require('@companion-module/base')
+const tcp = require('tcp')
 
-class instance extends instance_skel {
-	constructor(system, id, config) {
-		super(system, id, config)
+class instance extends InstanceBase {
+	constructor(internal) {
+		super(internal)
+
+		this.updateStatus(InstanceStatus.Disconnected)
+	}
+
+	async init(config, firstInit) {
 		let self = this
+
+		this.config = config
+
+		self.initTcp()
 
 		self.initActions()
 		self.initFeedback()
 		self.initPresets()
-
-		self.status(self.STATUS_UNKNOWN, '')
-	}
-
-	config_fields() {
-		let self = this
-
-		return [
-			{
-				type: 'text',
-				id: 'info',
-				width: 12,
-				label: 'Information',
-				value: 'This module controls DSXXX relay boards with raw TCP commands on default port 17123.',
-			},
-			{
-				type: 'textinput',
-				id: 'host',
-				label: 'Target IP',
-				width: 6,
-				regex: self.REGEX_IP,
-			},
-		]
-	}
-
-	init() {
-		let self = this
-
-		self.initTcp()
 		self.initVariables()
 	}
 
@@ -57,27 +37,27 @@ class instance extends instance_skel {
 		if (self.config.host === undefined || self.config.host.length === 0) {
 			let msg = 'IP is not set'
 			self.log('error', msg)
-			self.status(self.STATUS_WARNING, msg)
+			self.updateStatus(InstanceStatus.BadConfig, msg)
 			return
 		}
 
 		if (self.config.host !== undefined) {
-			self.socket = new tcp(self.config.host, self.config.port)
+			self.socket = tcp.createConnection(self.config.port, self.config.host)
 
-			self.status(self.STATE_WARNING, 'Connecting')
+			self.updateStatus(InstanceStatus.Connecting)
 
 			self.socket.on('status_change', (status, message) => {
-				self.status(status, message)
+				self.updateStatus(InstanceStatus.UnknownWarning, message)
 			})
 
 			self.socket.on('error', (err) => {
 				self.debug('Network error', err)
-				self.status(self.STATE_ERROR, err)
+				self.updateStatus(InstanceStatus.ConnectionFailure, err)
 				self.log('error', 'Network error: ' + err.message)
 			})
 
 			self.socket.on('connect', () => {
-				self.status(self.STATE_OK)
+				self.updateStatus(InstanceStatus.Ok)
 				self.debug('Connected')
 			})
 
@@ -87,7 +67,7 @@ class instance extends instance_skel {
 		}
 	}
 
-	destroy() {
+	async destroy() {
 		let self = this
 
 		if (self.socket !== undefined) {
@@ -97,12 +77,36 @@ class instance extends instance_skel {
 		self.debug('destroy', self.id)
 	}
 
+	getConfigFields() {
+		return [
+			{
+				type: 'static-text',
+				id: 'info',
+				width: 12,
+				label: 'Information',
+				value: 'This module controls DSXXX relay boards with raw TCP commands on default port 17123.',
+			},
+			{
+				type: 'textinput',
+				id: 'host',
+				label: 'Target IP',
+				width: 6,
+				regex: Regex.IP,
+			},
+		]
+	}
+
+	async configUpdated(config) {
+		this.config = config
+		this.initTcp()
+	}
+
 	initActions() {
 		let self = this
 		let actions = {}
 
 		actions['set_relay_single'] = {
-			label: 'Set Relay State',
+			name: 'Set Relay State',
 			options: [
 				{
 					type: 'number',
@@ -135,8 +139,8 @@ class instance extends instance_skel {
 					required: true,
 				},
 			],
-			callback: (action, bank) => {
-				let opt = action.options
+			callback: (event) => {
+				let opt = event.options
 				let index = opt.index
 				let state = opt.state
 				let period = opt.period
@@ -145,7 +149,7 @@ class instance extends instance_skel {
 		}
 
 		actions['set_output_single'] = {
-			label: 'Set Output State',
+			name: 'Set Output State',
 			options: [
 				{
 					type: 'number',
@@ -168,45 +172,33 @@ class instance extends instance_skel {
 					],
 				},
 			],
-			callback: (action, bank) => {
-				let opt = action.options
+			callback: (event) => {
+				let opt = event.options
 				let index = opt.index
 				let state = opt.state
 				self.sendCommand('SO ' + index + ' ' + state)
 			},
 		}
 
-		self.setActions(actions)
+		this.setActionDefinitions(actions)
 	}
 
 	initFeedback() {
-		let self = this
 		let feedbacks = {}
 
-		self.setFeedbackDefinitions(feedbacks)
+		this.setFeedbackDefinitions(feedbacks)
 	}
 
 	initVariables() {
-		let self = this
-
 		let variables = []
 
-		self.setVariableDefinitions(variables)
+		this.setVariableDefinitions(variables)
 	}
 
 	initPresets() {
-		let self = this
-		let presets = []
+		let presets = {}
 
-		self.setPresetDefinitions(presets)
-	}
-
-	updateConfig(config) {
-		let self = this
-
-		self.config = config
-
-		self.initTcp()
+		this.setPresetDefinitions(presets)
 	}
 
 	updateVariables(data, patch) {
@@ -214,8 +206,6 @@ class instance extends instance_skel {
 	}
 
 	sendCommand(data) {
-		let self = this
-
 		let sendBuf = Buffer.from(data + '\n', 'latin1')
 
 		if (sendBuf != '') {
@@ -230,4 +220,4 @@ class instance extends instance_skel {
 	}
 }
 
-exports = module.exports = instance
+runEntrypoint(instance, [])
