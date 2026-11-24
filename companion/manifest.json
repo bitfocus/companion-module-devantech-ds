@@ -3,7 +3,7 @@
 	"name": "devantech-ds",
 	"shortname": "DS",
 	"description": "Devantech DSXXX relay board",
-	"version": "2.0.0",
+	"version": "2.0.1",
 	"license": "MIT",
 	"repository": "git+https://github.com/bitfocus/companion-module-devantech-ds.git",
 	"bugs": "https://github.com/bitfocus/companion-module-devantech-ds/issues",
